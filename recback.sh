@@ -1,15 +1,14 @@
 #!/bin/bash
 
+tools=("nmap" "gobuster" "nikto" "nuclei" "sslscan" "whatweb" "dirsearch" "wfuzz" "sqlmap" "nonexist")
+
 banner () {
  cat $(pwd)/banner.txt
 }
-step ()
-{
-  echo "+------------------------------------------+"
-  printf "| %-40s |\n" "`date`"
-  echo "|                                          |"
-  printf "|`tput bold` %-40s `tput sgr0`|\n" "$@"
-  echo "+------------------------------------------+"
-}
 
-banner
+for tool in ${tools[@]}; do
+  which $tool
+  if [ "$?" -eq 0 ]; then
+    echo ok
+  fi
+done
