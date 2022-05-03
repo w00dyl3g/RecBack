@@ -154,6 +154,9 @@ http_scan(){
    echo -e "$O[!] Starting dirsearch for $url...$NC"
    sudo $(which dirsearch) -u $url -o $(pwd)/$target/dirsearch-$service.txt --full-url --max-time=300 -r 1>/dev/null
    echo -e "$G[!] Dirsearch ended for $url!$NC\n"
+   echo -e "$O[!] Starting feroxbuster for $url...$NC"
+   sudo $(which feroxbuster) -q -u $url -o $(pwd)/$target/feroxbuster-$service.txt --time-limit 300s 1>/dev/null
+   echo -e "$G[!] Dirsearch ended for $url!$NC\n"
    echo -e "$O[!] Starting whatweb for $url...$NC"
    $(which whatweb) -a 1 $url -v | tee $target/whatweb-$service.txt 1>/dev/null
    echo -e "$G[!] Whatweb ended for $url!$NC\n"
@@ -177,7 +180,7 @@ check_tool dirsearch
 check_tool nikto
 check_tool whatweb
 check_tool nuclei
-
+check_tool feroxbuster
 http_scan
 #TBC
 
