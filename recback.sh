@@ -141,15 +141,16 @@ http_scan(){
     url="https://$target:$service/"
     echo -e "$O[!] Starting nikto for $url...$NC"
     yes | nikto -host $url -nointeractive -ssl -output $target/nikto-$service.txt 1>/dev/null
-    echo -e "$G[!] Nikto ended for $url!$NC"
+    echo -e "$G[!] Nikto ended for $url!$NC\n"
    else
     url="http://$target:$service/"
     echo -e "$O[!] Starting nikto for $url...$NC"
     yes | nikto -host $url -nointeractive -output $target/nikto-$service.txt 1>/dev/null
-    echo -e "$G[!] Nikto ended for $url!$NC"
+    echo -e "$G[!] Nikto ended for $url!$NC\n"
    fi
    echo -e "$O[!] Starting dirsearch for $url...$NC"
    sudo dirsearch -u $url -o $(pwd)/$target/dirsearch-$service.txt --full-url --max-time=10 1>/dev/null
+   echo -e "$G[!] Dirsearch ended for $url!$NC\n"
   done
  done
 } 
