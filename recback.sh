@@ -157,6 +157,9 @@ http_scan(){
    echo -e "$O[!] Starting whatweb for $url...$NC"
    $(which whatweb) -a 1 $url -v | tee $target/whatweb-$service.txt 1>/dev/null
    echo -e "$G[!] Whatweb ended for $url!$NC\n"
+   echo -e "$O[!] Starting nuclei for $url...$NC"
+   $(which nuclei) -u $url -o $target/whatweb-$service.txt 1>/dev/null
+   echo -e "$G[!] Nuclei ended for $url!$NC\n"
   done
  done
 } 
