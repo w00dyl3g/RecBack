@@ -176,6 +176,8 @@ check_tool sslscan
 check_tool dirsearch
 check_tool nikto
 check_tool whatweb
+check_tool nuclei
+
 http_scan
 #TBC
 
