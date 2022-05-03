@@ -50,7 +50,7 @@ check_tool() {
  fi
 }
 
-do_nmap(){
+ping_nmap(){
  #PING SCAN
  echo -e "$O[!] Check if hosts are reachable...$NC"
  $(which nmap) -vv -sn -iL $targets 1>/dev/null -oA nmap_ping_$targets
@@ -63,6 +63,9 @@ do_nmap(){
   echo -e "$R[NO] No hosts reachable, leaving...$NC"
   exit -3
  fi
+}
+
+tcp_nmap(){
  #TCP SCAN
  for target in $(cat nmap_ping_$targets.gnmap | grep "Status: Up" | cut -d " " -f 2)
  do
@@ -84,9 +87,12 @@ do_nmap(){
    echo -e "$R[NO] Quick TCP Scan for $target failed!$NC"
    exit -4
   fi 
- done 
+ done
+}
+
+udp_nmap(){
  #UDP SCAN TOP 30
- 
+ echo ""
 }
 
 
@@ -96,6 +102,8 @@ check_args $@
 echo ""
 check_tool nmap
 echo ""
-do_nmap
+ping_nmap
+tcp_nmap
+udp_nmap
 echo ""
 check_tool dirsearch
