@@ -71,15 +71,27 @@ do_nmap(){
   $(which sudo) $(which nmap) -sS -T5 -p- $target 1>/dev/null -oA ./$target/nmap_tcp_quick_fullport
   if [ "$?" -eq 0 ]; then
    echo -e "$G[OK] Quick TCP Scan for $target completed!$NC"
+   echo -e "$O[!] Starting TCP Service Discovery Scan for $target...$NC"
+   ports=$(cat ./$target/nmap_tcp_quick_fullport.nmap | grep open |  cut -d"/" -f1 |  tr "\n" ",")
+   ports=${ports::-1}
+   $(which sudo) $(which nmap) -sTV -T4 -p$ports $target 1>/dev/null -oA ./$target/nmap_tcp_discovery_openport
+   if [ "$?" -eq 0 ]; then
+    echo -e "$G[OK] TCP Service Discovery Scan for $target completed!$NC"  
+   else
+    echo -e "$R[NO] TCP Service Discovery Scan for  $target failed!$NC"
+    exit -5
+   fi
   else
    echo -e "$R[NO] Quick TCP Scan for $target failed!$NC"
    exit -4
   fi 
  done 
- #UDP SCANcat
+ #UDP SCAN TOP 30
  
 }
 
+
+#MAIN
 banner
 check_args $@
 check_nmap
