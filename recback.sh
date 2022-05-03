@@ -78,13 +78,17 @@ tcp_nmap(){
   if [ "$?" -eq 0 ]; then
    echo -e "$G[OK] Quick TCP Scan for $target completed!$NC"
    ports=$(cat ./$target/nmap_tcp_quick_fullport.nmap | grep open |  cut -d"/" -f1 |  tr "\n" ",")
-   ports=${ports::-1}
-   $(which sudo) $(which nmap) -sTV -T4 -p$ports $target 1>/dev/null -oA ./$target/nmap_tcp_discovery_openport
-   if [ "$?" -eq 0 ]; then
-    echo -e "$G[OK] TCP Service Discovery Scan for $target completed!$NC"  
+   if [ "$ports" = "" ];then
+    echo -e "$R[NO] TCP Service Discovery Scan for $target completed, but no open port found!$NC"
    else
-    echo -e "$R[NO] TCP Service Discovery Scan for  $target failed!$NC"
-    exit -5
+    ports=${ports::-1}
+    $(which sudo) $(which nmap) -sTV -T4 -p$ports $target 1>/dev/null -oA ./$target/nmap_tcp_discovery_openport
+    if [ "$?" -eq 0 ]; then
+     echo -e "$G[OK] TCP Service Discovery Scan for $target completed!$NC"  
+    else
+     echo -e "$R[NO] TCP Service Discovery Scan for  $target failed!$NC"
+     exit -5
+    fi
    fi
   else
    echo -e "$R[NO] Quick TCP Scan for $target failed!$NC"
