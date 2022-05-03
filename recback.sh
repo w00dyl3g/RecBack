@@ -15,6 +15,7 @@ NC='\033[0m' # No Color
 #FUNCTIONS
 banner () {
  cat $(pwd)/banner.txt
+ echo ""
 }
 
 check_args() {
@@ -36,6 +37,7 @@ check_args() {
   echo -e "$R[NO] targets file arg missing, leaving...$NC"
   exit -1
  fi
+ echo ""
 }
 
 check_tool() {
@@ -48,6 +50,7 @@ check_tool() {
   echo -e "$R[NO] $1 is not installed, leaving...$NC"
   exit -2
  fi
+ echo ""
 }
 
 ping_nmap(){
@@ -88,10 +91,36 @@ tcp_nmap(){
    exit -4
   fi 
  done
+ echo ""
 }
 
 udp_nmap(){
  #UDP SCAN TOP 30
+ for target in $(cat nmap_ping_$targets.gnmap | grep "Status: Up" | cut -d " " -f 2)
+ do
+  echo -e "\n$O[!] UDP Scan for $target...$NC"
+  mkdir -p ./$target/
+  $(which sudo) $(which nmap) -sU -T5 $target 1>/dev/null -oA ./$target/nmap_udp_quick_defaultport
+  if [ "$?" -eq 0 ]; then
+   echo -e "$G[OK] Quick UDP Scan for $target completed!$NC"
+   ports=$(cat ./$target/nmap_udp_quick_defaultport.nmap | grep open |  cut -d"/" -f1 |  tr "\n" ",")
+   if [ "$ports" = "" ];then
+    echo -e "$R[NO] UDP Service Discovery Scan for $target completed, but no open port found!$NC"
+   else
+    ports=${ports::-1}
+    $(which sudo) $(which nmap) -sUV -T4 -p$ports $target 1>/dev/null -oA ./$target/nmap_udp_discovery_openport
+    if [ "$?" -eq 0 ]; then
+     echo -e "$G[OK] UDP Service Discovery Scan for $target completed!$NC"  
+    else
+     echo -e "$R[NO] UDP Service Discovery Scan for  $target failed!$NC"
+     exit -5
+    fi
+   fi
+  else
+   echo -e "$R[NO] Quick UDP Scan for $target failed!$NC"
+   exit -4
+  fi 
+ done
  echo ""
 }
 
@@ -99,11 +128,8 @@ udp_nmap(){
 #MAIN
 banner
 check_args $@
-echo ""
 check_tool nmap
-echo ""
 ping_nmap
 tcp_nmap
 udp_nmap
-echo ""
 check_tool dirsearch
