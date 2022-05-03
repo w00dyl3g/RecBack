@@ -129,6 +129,32 @@ udp_nmap(){
 }
 
 
+http_scan(){
+ #get hosts
+ for target in $(cat nmap_ping_$targets.gnmap | grep "Status: Up" | cut -d " " -f 2)
+ do
+  for service in $(cat $target/nmap_tcp_discovery_openport.nmap | grep http | grep open | grep tcp | cut -d"/" -f1 )
+  do
+   service_detail=$(cat ./$target/nmap_tcp_discovery_openport.nmap | grep $service | grep open | grep http)
+   if [[ "ssl/http" == *"$service_detail"* ]];
+   then
+    url="https://$target:$service/"
+    echo -e "$O[!] Starting nikto for $url...$NC"
+    yes | nikto -host $url -nointeractive -ssl -output $target/nikto-$service.txt 1>/dev/null
+    echo -e "$G[!] Nikto ended for $url!$NC"
+   else
+    url="http://$target:$service/"
+    echo -e "$O[!] Starting nikto for $url...$NC"
+    yes | nikto -host $url -nointeractive -output $target/nikto-$service.txt 1>/dev/null
+    echo -e "$G[!] Nikto ended for $url!$NC"
+   fi
+   echo -e "$O[!] Starting dirsearch for $url...$NC"
+   sudo dirsearch -u $url -o $(pwd)/$target/dirsearch-$service.txt --full-url --max-time=10 1>/dev/null
+  done
+ done
+} 
+
+
 #MAIN
 banner
 check_args $@
@@ -137,3 +163,10 @@ ping_nmap
 tcp_nmap
 udp_nmap
 check_tool dirsearch
+check_tool nikto
+check_tool whatweb
+http_scan
+#TBC
+
+
+
