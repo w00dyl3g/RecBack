@@ -67,7 +67,8 @@ do_nmap(){
  for target in $(cat nmap_ping_$targets.gnmap | grep "Status: Up" | cut -d " " -f 2)
  do
   echo -e "$O[!] Starting quick TCP Scan for $target...$NC"
-  $(which sudo) $(which nmap) -sA -T5 $target 1>/dev/null -oA nmap_tcp_quick_$target
+  mkdir -p ./$target/
+  $(which sudo) $(which nmap) -sS -T5 -p- $target 1>/dev/null -oA ./$target/nmap_tcp_quick_fullport
   if [ "$?" -eq 0 ]; then
    echo -e "$G[OK] Quick TCP Scan for $target completed!$NC"
   else
