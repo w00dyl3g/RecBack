@@ -1,2 +1,6 @@
 # RecBack
-Recon Script to run in background
+Recon Script to run and leave in background.
+
+## Example:
+
+sudo ./recback targets.txt
