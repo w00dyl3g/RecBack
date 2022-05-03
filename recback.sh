@@ -149,7 +149,7 @@ http_scan(){
     echo -e "$G[!] Nikto ended for $url!$NC\n"
    fi
    echo -e "$O[!] Starting dirsearch for $url...$NC"
-   sudo dirsearch -u $url -o $(pwd)/$target/dirsearch-$service.txt --full-url --max-time=300 1>/dev/null
+   sudo dirsearch -u $url -o $(pwd)/$target/dirsearch-$service.txt --full-url --max-time=300 -r 1>/dev/null
    echo -e "$G[!] Dirsearch ended for $url!$NC\n"
   done
  done
