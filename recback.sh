@@ -38,14 +38,14 @@ check_args() {
  fi
 }
 
-check_nmap() {
- echo -e "$O[!] Check if nmap is installed...$NC"
- which nmap 1>/dev/null
+check_tool() {
+ echo -e "$O[!] Check if $1 is installed...$NC"
+ which $1 1>/dev/null
  sleep 0.1
  if [ "$?" -eq 0 ]; then
-  echo -e "$G[OK] nmap is installed!$NC"
+  echo -e "$G[OK] $1 is installed!$NC"
  else
-  echo -e "$R[NO] nmap is not installed, leaving...$NC"
+  echo -e "$R[NO] $1 is not installed, leaving...$NC"
   exit -2
  fi
 }
@@ -66,12 +66,11 @@ do_nmap(){
  #TCP SCAN
  for target in $(cat nmap_ping_$targets.gnmap | grep "Status: Up" | cut -d " " -f 2)
  do
-  echo -e "$O[!] Starting quick TCP Scan for $target...$NC"
+  echo -e "\n$O[!] TCP Scan for $target...$NC"
   mkdir -p ./$target/
   $(which sudo) $(which nmap) -sS -T5 -p- $target 1>/dev/null -oA ./$target/nmap_tcp_quick_fullport
   if [ "$?" -eq 0 ]; then
    echo -e "$G[OK] Quick TCP Scan for $target completed!$NC"
-   echo -e "$O[!] Starting TCP Service Discovery Scan for $target...$NC"
    ports=$(cat ./$target/nmap_tcp_quick_fullport.nmap | grep open |  cut -d"/" -f1 |  tr "\n" ",")
    ports=${ports::-1}
    $(which sudo) $(which nmap) -sTV -T4 -p$ports $target 1>/dev/null -oA ./$target/nmap_tcp_discovery_openport
@@ -94,5 +93,9 @@ do_nmap(){
 #MAIN
 banner
 check_args $@
-check_nmap
+echo ""
+check_tool nmap
+echo ""
 do_nmap
+echo ""
+check_tool dirsearch
